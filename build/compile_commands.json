@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/user/Documents/workspace/FunctionArgsAnalysis/build",
+  "command": "/usr/bin/clang++    -I/usr/local/include -I/home/user/Documents/workspace/FunctionArgsAnalysis/src/../include    -Wall -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++11 -o CMakeFiles/main.dir/main.cpp.o -c /home/user/Documents/workspace/FunctionArgsAnalysis/src/main.cpp",
+  "file": "/home/user/Documents/workspace/FunctionArgsAnalysis/src/main.cpp"
+},
+{
+  "directory": "/home/user/Documents/workspace/FunctionArgsAnalysis/build",
+  "command": "/usr/bin/clang++    -I/usr/local/include -I/home/user/Documents/workspace/FunctionArgsAnalysis/src/../include    -Wall -fno-rtti -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++11 -o CMakeFiles/main.dir/ArgumentAnalysisPass.cpp.o -c /home/user/Documents/workspace/FunctionArgsAnalysis/src/ArgumentAnalysisPass.cpp",
+  "file": "/home/user/Documents/workspace/FunctionArgsAnalysis/src/ArgumentAnalysisPass.cpp"
+}
+]
