@@ -7,11 +7,49 @@ target triple = "x86_64-unknown-linux-gnu"
 @main.b = private unnamed_addr constant [5 x i32] [i32 10, i32 20, i32 30, i32 40, i32 50], align 16
 
 ; Function Attrs: noinline nounwind uwtable
-define i32 @f_loop(i32*, i32*, i32*, i32, i32*, i32*) #0 {
+define void @evil_func(i32*, i32*) #0 {
+  %3 = alloca i32*, align 8
+  %4 = alloca i32*, align 8
+  %5 = alloca i32, align 4
+  store i32* %0, i32** %3, align 8
+  store i32* %1, i32** %4, align 8
+  store i32 0, i32* %5, align 4
+  br label %6
+
+; <label>:6:                                      ; preds = %19, %2
+  %7 = load i32, i32* %5, align 4
+  %8 = icmp slt i32 %7, 5
+  br i1 %8, label %9, label %22
+
+; <label>:9:                                      ; preds = %6
+  %10 = load i32*, i32** %3, align 8
+  %11 = load i32, i32* %5, align 4
+  %12 = sext i32 %11 to i64
+  %13 = getelementptr inbounds i32, i32* %10, i64 %12
+  %14 = load i32, i32* %13, align 4
+  %15 = load i32*, i32** %4, align 8
+  %16 = load i32, i32* %15, align 4
+  %17 = add nsw i32 %14, %16
+  %18 = load i32*, i32** %4, align 8
+  store i32 %17, i32* %18, align 4
+  br label %19
+
+; <label>:19:                                     ; preds = %9
+  %20 = load i32, i32* %5, align 4
+  %21 = add nsw i32 %20, 1
+  store i32 %21, i32* %5, align 4
+  br label %6
+
+; <label>:22:                                     ; preds = %6
+  ret void
+}
+
+; Function Attrs: noinline nounwind uwtable
+define i32 @f_loop(i32*, i32*, i32*, i32*, i32*, i32*) #0 {
   %7 = alloca i32*, align 8
   %8 = alloca i32*, align 8
   %9 = alloca i32*, align 8
-  %10 = alloca i32, align 4
+  %10 = alloca i32*, align 8
   %11 = alloca i32*, align 8
   %12 = alloca i32*, align 8
   %13 = alloca [5 x i32], align 16
@@ -22,17 +60,17 @@ define i32 @f_loop(i32*, i32*, i32*, i32, i32*, i32*) #0 {
   store i32* %0, i32** %7, align 8
   store i32* %1, i32** %8, align 8
   store i32* %2, i32** %9, align 8
-  store i32 %3, i32* %10, align 4
+  store i32* %3, i32** %10, align 8
   store i32* %4, i32** %11, align 8
   store i32* %5, i32** %12, align 8
   store i32 103, i32* %15, align 4
   store i32 0, i32* %16, align 4
   br label %18
 
-; <label>:18:                                     ; preds = %71, %6
+; <label>:18:                                     ; preds = %75, %6
   %19 = load i32, i32* %16, align 4
   %20 = icmp slt i32 %19, 5
-  br i1 %20, label %21, label %74
+  br i1 %20, label %21, label %78
 
 ; <label>:21:                                     ; preds = %18
   %22 = load i32*, i32** %7, align 8
@@ -54,95 +92,102 @@ define i32 @f_loop(i32*, i32*, i32*, i32, i32*, i32*) #0 {
   %37 = sext i32 %36 to i64
   %38 = getelementptr inbounds [5 x i32], [5 x i32]* %13, i64 0, i64 %37
   %39 = load i32, i32* %38, align 4
-  %40 = load i32, i32* %10, align 4
-  %41 = mul nsw i32 %39, %40
-  %42 = load i32, i32* %10, align 4
-  %43 = add nsw i32 %41, %42
-  %44 = load i32, i32* %16, align 4
-  %45 = sext i32 %44 to i64
-  %46 = getelementptr inbounds [5 x i32], [5 x i32]* %14, i64 0, i64 %45
-  store i32 %43, i32* %46, align 4
-  %47 = load i32, i32* %16, align 4
-  %48 = sext i32 %47 to i64
-  %49 = getelementptr inbounds [5 x i32], [5 x i32]* %14, i64 0, i64 %48
-  %50 = load i32, i32* %49, align 4
-  %51 = load i32*, i32** %9, align 8
-  %52 = load i32, i32* %16, align 4
-  %53 = sext i32 %52 to i64
-  %54 = getelementptr inbounds i32, i32* %51, i64 %53
-  %55 = load i32, i32* %54, align 4
-  %56 = sdiv i32 %50, %55
-  %57 = load i32*, i32** %9, align 8
-  %58 = load i32, i32* %16, align 4
-  %59 = sext i32 %58 to i64
-  %60 = getelementptr inbounds i32, i32* %57, i64 %59
-  store i32 %56, i32* %60, align 4
-  %61 = load i32, i32* %10, align 4
-  %62 = load i32*, i32** %11, align 8
-  %63 = load i32, i32* %62, align 4
-  %64 = add nsw i32 %61, %63
-  %65 = load i32*, i32** %12, align 8
-  store i32 %64, i32* %65, align 4
-  %66 = load i32, i32* %10, align 4
-  %67 = load i32*, i32** %12, align 8
-  %68 = load i32, i32* %67, align 4
-  %69 = mul nsw i32 %66, %68
-  %70 = load i32*, i32** %11, align 8
-  store i32 %69, i32* %70, align 4
-  br label %71
-
-; <label>:71:                                     ; preds = %21
-  %72 = load i32, i32* %16, align 4
-  %73 = add nsw i32 %72, 1
-  store i32 %73, i32* %16, align 4
-  br label %18
-
-; <label>:74:                                     ; preds = %18
-  store i32 0, i32* %17, align 4
+  %40 = load i32*, i32** %10, align 8
+  %41 = load i32, i32* %40, align 4
+  %42 = mul nsw i32 %39, %41
+  %43 = load i32*, i32** %10, align 8
+  %44 = load i32, i32* %43, align 4
+  %45 = add nsw i32 %42, %44
+  %46 = load i32, i32* %16, align 4
+  %47 = sext i32 %46 to i64
+  %48 = getelementptr inbounds [5 x i32], [5 x i32]* %14, i64 0, i64 %47
+  store i32 %45, i32* %48, align 4
+  %49 = load i32, i32* %16, align 4
+  %50 = sext i32 %49 to i64
+  %51 = getelementptr inbounds [5 x i32], [5 x i32]* %14, i64 0, i64 %50
+  %52 = load i32, i32* %51, align 4
+  %53 = load i32*, i32** %9, align 8
+  %54 = load i32, i32* %16, align 4
+  %55 = sext i32 %54 to i64
+  %56 = getelementptr inbounds i32, i32* %53, i64 %55
+  %57 = load i32, i32* %56, align 4
+  %58 = sdiv i32 %52, %57
+  %59 = load i32*, i32** %9, align 8
+  %60 = load i32, i32* %16, align 4
+  %61 = sext i32 %60 to i64
+  %62 = getelementptr inbounds i32, i32* %59, i64 %61
+  store i32 %58, i32* %62, align 4
+  %63 = load i32*, i32** %10, align 8
+  %64 = load i32, i32* %63, align 4
+  %65 = load i32*, i32** %11, align 8
+  %66 = load i32, i32* %65, align 4
+  %67 = add nsw i32 %64, %66
+  %68 = load i32*, i32** %12, align 8
+  store i32 %67, i32* %68, align 4
+  %69 = load i32*, i32** %10, align 8
+  %70 = load i32, i32* %69, align 4
+  %71 = load i32*, i32** %12, align 8
+  %72 = load i32, i32* %71, align 4
+  %73 = mul nsw i32 %70, %72
+  %74 = load i32*, i32** %11, align 8
+  store i32 %73, i32* %74, align 4
   br label %75
 
-; <label>:75:                                     ; preds = %104, %74
-  %76 = load i32, i32* %17, align 4
-  %77 = icmp slt i32 %76, 5
-  br i1 %77, label %78, label %107
+; <label>:75:                                     ; preds = %21
+  %76 = load i32, i32* %16, align 4
+  %77 = add nsw i32 %76, 1
+  store i32 %77, i32* %16, align 4
+  br label %18
 
-; <label>:78:                                     ; preds = %75
-  %79 = load i32*, i32** %7, align 8
+; <label>:78:                                     ; preds = %18
+  store i32 0, i32* %17, align 4
+  br label %79
+
+; <label>:79:                                     ; preds = %108, %78
   %80 = load i32, i32* %17, align 4
-  %81 = sext i32 %80 to i64
-  %82 = getelementptr inbounds i32, i32* %79, i64 %81
-  %83 = load i32, i32* %82, align 4
+  %81 = icmp slt i32 %80, 5
+  br i1 %81, label %82, label %111
+
+; <label>:82:                                     ; preds = %79
+  %83 = load i32*, i32** %7, align 8
   %84 = load i32, i32* %17, align 4
   %85 = sext i32 %84 to i64
-  %86 = getelementptr inbounds [5 x i32], [5 x i32]* %13, i64 0, i64 %85
+  %86 = getelementptr inbounds i32, i32* %83, i64 %85
   %87 = load i32, i32* %86, align 4
-  %88 = add nsw i32 %83, %87
-  %89 = load i32*, i32** %9, align 8
-  %90 = load i32, i32* %17, align 4
-  %91 = sext i32 %90 to i64
-  %92 = getelementptr inbounds i32, i32* %89, i64 %91
-  store i32 %88, i32* %92, align 4
+  %88 = load i32, i32* %17, align 4
+  %89 = sext i32 %88 to i64
+  %90 = getelementptr inbounds [5 x i32], [5 x i32]* %13, i64 0, i64 %89
+  %91 = load i32, i32* %90, align 4
+  %92 = add nsw i32 %87, %91
   %93 = load i32*, i32** %9, align 8
   %94 = load i32, i32* %17, align 4
   %95 = sext i32 %94 to i64
   %96 = getelementptr inbounds i32, i32* %93, i64 %95
-  %97 = load i32, i32* %96, align 4
-  %98 = load i32, i32* %15, align 4
-  %99 = sdiv i32 %97, %98
-  %100 = load i32*, i32** %9, align 8
-  %101 = load i32, i32* %17, align 4
-  %102 = sext i32 %101 to i64
-  %103 = getelementptr inbounds i32, i32* %100, i64 %102
-  store i32 %99, i32* %103, align 4
-  br label %104
-
-; <label>:104:                                    ; preds = %78
+  store i32 %92, i32* %96, align 4
+  %97 = load i32*, i32** %9, align 8
+  %98 = load i32, i32* %17, align 4
+  %99 = sext i32 %98 to i64
+  %100 = getelementptr inbounds i32, i32* %97, i64 %99
+  %101 = load i32, i32* %100, align 4
+  %102 = load i32, i32* %15, align 4
+  %103 = sdiv i32 %101, %102
+  %104 = load i32*, i32** %9, align 8
   %105 = load i32, i32* %17, align 4
-  %106 = add nsw i32 %105, 1
-  store i32 %106, i32* %17, align 4
-  br label %75
+  %106 = sext i32 %105 to i64
+  %107 = getelementptr inbounds i32, i32* %104, i64 %106
+  store i32 %103, i32* %107, align 4
+  br label %108
 
-; <label>:107:                                    ; preds = %75
+; <label>:108:                                    ; preds = %82
+  %109 = load i32, i32* %17, align 4
+  %110 = add nsw i32 %109, 1
+  store i32 %110, i32* %17, align 4
+  br label %79
+
+; <label>:111:                                    ; preds = %79
+  %112 = load i32*, i32** %7, align 8
+  %113 = load i32*, i32** %10, align 8
+  call void @evil_func(i32* %112, i32* %113)
   ret i32 0
 }
 
@@ -166,9 +211,8 @@ define i32 @main() #0 {
   %10 = getelementptr inbounds [5 x i32], [5 x i32]* %2, i32 0, i32 0
   %11 = getelementptr inbounds [5 x i32], [5 x i32]* %3, i32 0, i32 0
   %12 = getelementptr inbounds [5 x i32], [5 x i32]* %4, i32 0, i32 0
-  %13 = load i32, i32* %5, align 4
-  %14 = call i32 @f_loop(i32* %10, i32* %11, i32* %12, i32 %13, i32* %6, i32* %7)
-  ret i32 %14
+  %13 = call i32 @f_loop(i32* %10, i32* %11, i32* %12, i32* %5, i32* %6, i32* %7)
+  ret i32 %13
 }
 
 ; Function Attrs: argmemonly nounwind
