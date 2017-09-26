@@ -117,6 +117,8 @@ bool ArgumentAnalysisPass::runOnModule(llvm::Module &M){
         
         functionPassManager->run(F);
         
+        F.dump();
+        
         analyzeArguments(F);
     }
     
