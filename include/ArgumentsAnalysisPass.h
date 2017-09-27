@@ -19,7 +19,7 @@ namespace func_analysis{
     
     char ID = 0;
     
-    enum class ArgumentType { R = 0, RW = 1, W = 2, U = 3};
+    enum class ArgumentType { U = 0, R = 1, W = 2, RW = 3, N = 4, NR = 5, NW = 6, NRW = 7 };
     
     typedef std::vector<ArgumentType> ArgsVector;
     typedef std::map<std::string,ArgsVector> FunMap;
@@ -39,6 +39,8 @@ namespace func_analysis{
         void analyzeArguments(llvm::Function &F);
         
         void printFunctionMap();
+
+        ArgumentType sumFlag(ArgumentType a1, ArgumentType a2);
     };
 
     ArgumentAnalysisPass* createArgumentAnalysisWrapperPass();
