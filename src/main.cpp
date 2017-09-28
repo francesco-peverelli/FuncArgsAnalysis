@@ -14,15 +14,6 @@
 
 using namespace llvm;
 
-/**
- * @brief Entry point of the program. Two arguments must be passed. 
- * @param argc 
- * @param argv [1]: name of a /path/to/file.ll file
- *        argv [3]: name of the function to process. Must correspond to the name of a
- *        function to translate present in the C implementation in the file from which
- *        the .ll file was generated.
- * @return 0 on success, -1 on failure
- */
 int main(int argc, char**argv) {
 	    
     static LLVMContext context;             // LLVMContext variable

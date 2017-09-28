@@ -142,10 +142,10 @@ void ArgumentAnalysisPass::analyzeArguments(llvm::Function &F) {
 
 void ArgumentAnalysisPass::resolveNonDecidable()
 {
-    for(auto it=functionsMapping.begin(); it != functionsMapping.end(); ++it)   // For each function (int the map)
+    for(auto it=functionsMapping.begin(); it != functionsMapping.end(); ++it)
     {
         llvm::Function *F = module->getFunction(it->first);
-        for(auto it_2 = it->second.begin(); it_2 != it->second.end(); ++it_2)   // For each parameter
+        for(auto it_2 = it->second.begin(); it_2 != it->second.end(); ++it_2)
         {
             if(isNotDecidable(*it_2))
             {
@@ -226,8 +226,6 @@ bool ArgumentAnalysisPass::runOnModule(llvm::Module &M){
         functionPassManager->add(scevPassRef);                                  // -scalar-evolution
         
         functionPassManager->run(F);
-        
-        //F.dump();
         
         analyzeArguments(F);
 
