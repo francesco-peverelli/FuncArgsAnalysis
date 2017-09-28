@@ -86,6 +86,24 @@ void ArgumentAnalysisPass::analyzeArguments(llvm::Function &F) {
             {
                 if(userAsInstr->getOpcodeName() == std::string("getelementptr"))
                 {
+                    llvm::Instruction * getElemPtr = userAsInstr;
+                    while(getElemPtr->getOpcodeName() == std::string("getelementptr")) {
+                        bool hasBeenAssigned = false;
+                        for(llvm::User *pointerUser : getElemPtr->users()) {
+                            if (llvm::Instruction *pointerAsInstruction = llvm::dyn_cast<llvm::Instruction>(pointerUser)) {
+                                if (pointerAsInstruction->getOpcodeName() == std::string("getelementptr")) {
+                                    getElemPtr = pointerAsInstruction;
+                                    hasBeenAssigned = true;
+                                } else {
+                                    hasBeenAssigned = false;
+                                }
+                            }
+                        }
+                        if(!hasBeenAssigned)
+                            break;
+                    }
+
+                    userAsInstr = getElemPtr;
                     for(llvm::User* pointerUser : userAsInstr->users())
                     {
                         if(llvm::Instruction* pointerUserAsInstr = llvm::dyn_cast<llvm::Instruction>(pointerUser))
