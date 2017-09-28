@@ -5,28 +5,14 @@
 #include <list>
 #include <algorithm>
 
-#include "llvm/IR/Module.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm-c/Core.h"
+#include "llvm/Transforms/Utils/Cloning.h"
+#include "llvm/Linker/Linker.h"
 
 #include "ArgumentsAnalysisPass.h"
 #include "llvm/AsmParser/Parser.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/raw_ostream.h"
-
-#include "llvm/Analysis/LoopInfo.h"
-#include "llvm/Analysis/ScalarEvolution.h"
-#include "llvm/Analysis/ScalarEvolutionAliasAnalysis.h"
-#include "llvm/Analysis/AliasAnalysis.h"
-#include "llvm/Transforms/Scalar.h"
-
 
 using namespace llvm;
-
-//Directory used to access .ll files to process
-std::string RESOURCES_DIR; 
-//Directory used to store the processed files
-std::string OUTPUT_DIR;
 
 /**
  * @brief Entry point of the program. Two arguments must be passed. 
@@ -42,14 +28,27 @@ int main(int argc, char**argv) {
     static LLVMContext context;             // LLVMContext variable
     SMDiagnostic error;                     // error message
     Module* module;                         // module to process
+
+    if(argc < 2)
+    {
+        llvm::errs() << "Expected a path and at least one .ll file...\n";
+        return -1;
+    }
     
-    StringRef filePathRef = argv[1];        // StringRef for the file to process
-    
-    //parse a llvm::Module from the .ll file 
-    auto modPtr = parseAssemblyFile(filePathRef,error,context);
+    std::string filePathRef = argv[1];        // StringRef for the file to process
+
+    //parse a llvm::Module from the .ll file
+    std::string firstModule = filePathRef + argv[2];
+    auto modPtr = parseAssemblyFile(firstModule,error,context);
     
     module = (Module*)modPtr.get();
-    
+
+    for(int i = 3; i < argc; i++)
+    {
+        std::string modulePath = filePathRef + argv[i];
+        llvm::Linker::linkModules(*module,parseAssemblyFile(modulePath,error,context));
+    }
+
     llvm::legacy::PassManager passManager;
     passManager.add(new func_analysis::ArgumentAnalysisPass());
     passManager.run(*module);
