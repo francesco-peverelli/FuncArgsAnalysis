@@ -18,12 +18,15 @@ namespace func_analysis{
     class ArgumentAnalysisPass : public llvm::ModulePass{
     
     char ID = 0;
-    
+
+    llvm::Module *module;
+
     enum class ArgumentType { U = 0, R = 1, W = 2, RW = 3, N = 4, NR = 5, NW = 6, NRW = 7 };
     
     typedef std::vector<ArgumentType> ArgsVector;
-    typedef std::map<std::string,ArgsVector> FunMap;
-    
+    typedef std::map<std::string, ArgsVector> FunMap;
+    typedef std::pair<std::string, int> ArgPosition;    // (functionName, ArgumentPosition)
+
     FunMap functionsMapping;
         
     public:
@@ -41,6 +44,15 @@ namespace func_analysis{
         void printFunctionMap();
 
         ArgumentType sumFlag(ArgumentType a1, ArgumentType a2);
+
+        bool isNotDecidable(ArgumentType a);
+
+        void resolveNonDecidable();
+
+        ArgumentType turnDecided(ArgumentType a1);
+
+        ArgumentType resolveArgumentType(std::vector<ArgPosition> &callVector, ArgumentType currentType);
+
     };
 
     ArgumentAnalysisPass* createArgumentAnalysisWrapperPass();
